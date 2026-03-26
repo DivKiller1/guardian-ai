@@ -1,0 +1,182 @@
+services:
+  # AI Detection Service
+  ai-detection:
+    build: .
+    ports:
+      - "5500:5500"
+    volumes:
+      - ./models:/app/models
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - ddos-net
+    restart: always
+
+  # Data Collector
+  data-collector:
+    build: .
+    command: python data_collector.py
+    depends_on:
+      - ai-detection
+      - haproxy-lb1
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - AI_URL=http://ai-detection:5500
+    networks:
+      - ddos-net
+    restart: always
+
+  # 3 Load Balancers (HAProxy)
+  haproxy-lb1:
+    image: haproxy:2.8
+    ports:
+      - "8081:8080"
+      - "80:80"
+    volumes:
+      - ./haproxy/haproxy-lb1.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./logs:/var/log/haproxy
+    networks:
+      - ddos-net
+    restart: always
+
+  haproxy-lb2:
+    image: haproxy:2.8
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./haproxy/haproxy-lb2.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./logs:/var/log/haproxy
+    networks:
+      - ddos-net
+    restart: always
+
+  haproxy-lb3:
+    image: haproxy:2.8
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./haproxy/haproxy-lb3.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./logs:/var/log/haproxy
+    networks:
+      - ddos-net
+    restart: always
+
+  # Backend API Servers
+  backend-api1:
+    build: .
+    command: python backend_app.py
+    ports:
+      - "5001:5000"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - ddos-net
+    restart: always
+
+  backend-api2:
+    build: .
+    command: python backend_app.py
+    ports:
+      - "5002:5000"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - ddos-net
+    restart: always
+
+  backend-api3:
+    build: .
+    command: python backend_app.py
+    ports:
+      - "5003:5000"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - ddos-net
+    restart: always
+
+  # PostgreSQL Databases
+  postgres-db1:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ddosdb1
+      POSTGRES_USER: ddosuser
+      POSTGRES_PASSWORD: ddospass
+    volumes:
+      - ./data/db1:/var/lib/postgresql/data
+    networks:
+      - ddos-net
+    restart: always
+
+  postgres-db2:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ddosdb2
+      POSTGRES_USER: ddosuser
+      POSTGRES_PASSWORD: ddospass
+    volumes:
+      - ./data/db2:/var/lib/postgresql/data
+    networks:
+      - ddos-net
+    restart: always
+
+  postgres-db3:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ddosdb3
+      POSTGRES_USER: ddosuser
+      POSTGRES_PASSWORD: ddospass
+    volumes:
+      - ./data/db3:/var/lib/postgresql/data
+    networks:
+      - ddos-net
+    restart: always
+
+  # Enhanced DDoS Simulator
+  ddos-simulator-enhanced:
+    build: .
+    command: tail -f /dev/null
+    volumes:
+      - .:/app
+    networks:
+      - ddos-net
+    restart: always
+
+  # Monitoring (Prometheus + Grafana)
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - ddos-net
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - ddos-net
+
+  # Frontend Dashboard
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3000"
+    depends_on:
+      - ai-detection
+    networks:
+      - ddos-net
+    restart: always
+
+networks:
+  ddos-net:
+    driver: bridge
+
+volumes:
+  logs:
+  models:
