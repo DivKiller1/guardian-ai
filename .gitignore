@@ -1,10 +1,11 @@
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 
 # Node
 node_modules/
+frontend_old/
 dist/
 dist-ssr/
 *.local
@@ -15,8 +16,12 @@ dist-ssr/
 .DS_Store
 
 # Data
-data/
+data/dataset/
+data/db*/
 outputs/
+
+# Models
+models/*.pt
 
 # Python
 __pycache__/
