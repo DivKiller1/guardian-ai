@@ -1,0 +1,11 @@
+groups:
+- name: guardian_alerts
+  rules:
+  - alert: HighAttackRate
+    expr: guardian_recent_attacks > 5
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "High DDoS Attack Rate Detected"
+      description: "More than 5 attacks detected in the last 20 samples. Current value: {{ $value }}"

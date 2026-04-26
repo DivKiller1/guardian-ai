@@ -4,18 +4,10 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground antialiased selection:bg-accent selection:text-white;
+    @apply bg-background text-foreground antialiased;
   }
 }
 
-.glass {
-  @apply bg-card/60 backdrop-blur-md border border-white/10 shadow-xl;
-}
-
-.gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-blue-400 font-bold;
-}
-
-.neon-border {
-  @apply border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.2)];
+.flat-card {
+  @apply bg-card border border-border rounded-lg shadow-sm;
 }

@@ -7,17 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#020617",
-        foreground: "#f8fafc",
-        card: "#0f172a",
-        accent: "#3b82f6",
+        background: "#0f172a", // Slate 900
+        foreground: "#f8fafc", // Slate 50
+        card: "#1e293b",       // Slate 800
+        accent: "#3b82f6",     // Blue 500
+        border: "#334155",     // Slate 700
         danger: "#ef4444",
         success: "#22c55e",
         warning: "#f59e0b",
       },
-      animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      }
     },
   },
   plugins: [],

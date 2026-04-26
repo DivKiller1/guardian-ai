@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Shield, ShieldAlert, ShieldCheck, Zap, Lock, Unlock, Server } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Shield, Lock, Server, Activity } from 'lucide-react';
 
 const AI_URL = 'http://localhost:5500';
 
@@ -14,54 +13,48 @@ export default function MitigationPanel({ active, onToggle }) {
       await axios.post(`${AI_URL}/mitigation/toggle`, { active: !active });
       onToggle();
     } catch (err) {
-      console.error('Failed to toggle mitigation:', err);
+      console.error('Mitigation Error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="glass rounded-2xl p-6 border-white/5 space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="font-bold text-lg flex items-center gap-2 text-slate-200">
-          <Shield className="w-5 h-5 text-accent" />
-          Mitigation Center
+    <div className="flat-card p-6 space-y-6">
+      <div className="flex items-center justify-between border-b border-border pb-4">
+        <h3 className="font-bold text-slate-200 flex items-center gap-2">
+          <Shield className="w-4 h-4 text-accent" />
+          Mitigation Controls
         </h3>
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${active ? 'bg-success/20 text-success' : 'bg-slate-800 text-slate-500'}`}>
-          {active ? 'AI-ARMED' : 'STANDBY'}
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${active ? 'bg-success/10 border-success/20 text-success' : 'bg-slate-800 border-border text-slate-500'}`}>
+          {active ? 'PROTECTION ON' : 'MONITORING ONLY'}
         </span>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
+        <div className="flex items-center justify-between p-4 rounded bg-slate-800/30 border border-border">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${active ? 'bg-success/10 text-success' : 'bg-slate-800 text-slate-500'}`}>
-               <Lock className="w-5 h-5" />
+            <div className={`p-2 rounded ${active ? 'bg-success/10 text-success' : 'bg-slate-800 text-slate-500'}`}>
+               <Lock className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-300">Auto-Mitigation</p>
-              <p className="text-[10px] text-slate-500 text-balance">Enable AI-driven traffic filtering and rate limiting.</p>
+              <p className="text-sm font-bold text-slate-300">Automated Mitigation</p>
+              <p className="text-[10px] text-slate-500">Apply rate-limiting rules via HAProxy when attacks are detected.</p>
             </div>
           </div>
           <button 
             onClick={toggleMitigation}
             disabled={loading}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-slate-900 ${active ? 'bg-accent' : 'bg-slate-700'}`}
+            className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none ${active ? 'bg-accent' : 'bg-slate-700'}`}
           >
-            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${active ? 'translate-x-6' : 'translate-x-1'}`} />
+            <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${active ? 'translate-x-6' : 'translate-x-1'}`} />
           </button>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <StrategyCard icon={<Server className="w-4 h-4" />} label="Rate Limit" active={active} />
-          <StrategyCard icon={<Zap className="w-4 h-4" />} label="Challenge" active={active} />
+          <StrategyCard icon={<Server className="w-3.5 h-3.5" />} label="Rate Limiting" active={active} />
+          <StrategyCard icon={<Activity className="w-3.5 h-3.5" />} label="IP Filtering" active={active} />
         </div>
-      </div>
-      
-      <div className="p-3 rounded-lg bg-accent/5 border border-accent/10">
-        <p className="text-[10px] text-accent/80 leading-relaxed italic">
-          "Guardian AI is currently processing 15 traffic features per second and analyzing temporal patterns for anomalies."
-        </p>
       </div>
     </div>
   );
@@ -69,9 +62,9 @@ export default function MitigationPanel({ active, onToggle }) {
 
 function StrategyCard({ icon, label, active }) {
   return (
-    <div className={`flex items-center gap-2 p-2.5 rounded-lg border transition-all ${active ? 'bg-accent/5 border-accent/20 text-accent' : 'bg-slate-800/50 border-white/5 text-slate-500 opacity-50'}`}>
+    <div className={`flex items-center gap-2 p-2.5 rounded border ${active ? 'bg-accent/5 border-accent/20 text-accent' : 'bg-slate-800/20 border-border text-slate-500'}`}>
       {icon}
-      <span className="text-xs font-medium">{label}</span>
+      <span className="text-xs font-semibold">{label}</span>
     </div>
   );
 }
